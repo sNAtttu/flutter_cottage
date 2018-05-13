@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'weather.dart';
 
-void main() => runApp(new MyApp());
+void main() => runApp(new CottageApp());
 
-class MyApp extends StatelessWidget {
+class CottageApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -25,13 +26,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,21 +37,24 @@ class _MyHomePageState extends State<MyHomePage> {
         child: new Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            new Text(
-              'You have pushed the button this many times:',
-            ),
-            new Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
+           new Card(
+             child: new Column(
+               mainAxisSize: MainAxisSize.min,
+               children: <Widget>[
+                 ListTile(
+                   leading: new Icon(Icons.cloud),
+                   title: new Text("Pilvistä"),
+                   subtitle: new Text("15 Astetta"),
+                   onTap: (){ Navigator.push(context, new MaterialPageRoute(builder: (context) => new WeatherScreen())); },
+                   trailing: new IconButton(icon: new Icon(Icons.refresh),
+                     onPressed: () => print("Refresh")),
+                 )
+               ],
+             ),
+           )
           ],
         ),
       ),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: new Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
