@@ -76,7 +76,8 @@ class _MyHomePageState extends State<MyHomePage> {
                  ListTile(
                    leading: new Icon(Icons.cloud),
                    title: new Text(weatherResponse.weather.main),
-                   subtitle: new Text(weatherResponse.weather.description + " " + weatherResponse.main.temp.toString() + " °C"),
+                   subtitle: new Text("Temperature: " +
+                       weatherResponse.main.temp.round().toString() + " °C"),
                    onTap: (){ Navigator.push(context,
                        new MaterialPageRoute(builder: (context) => new WeatherScreen())); },
                    trailing: new IconButton(icon: new Icon(Icons.refresh),
