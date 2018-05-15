@@ -35,9 +35,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  WeatherResponse weatherResponse;
-  Config config;
-
   Future<Config> loadAsset() async {
     var stringConf = await rootBundle.loadString('assets/config.json');
     return Config.fromJson(json.decode((stringConf)));
@@ -57,12 +54,12 @@ class _MyHomePageState extends State<MyHomePage> {
       body: new Center(
         child: new FutureBuilder<Config>(
             future: loadAsset(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
+            builder: (context, config) {
+              if (config.hasData) {
                 return new FutureBuilder<WeatherResponse>(
-                  future: fetchWeather("${snapshot.data.baseUrl}?lat=${snapshot.data.latitude}&lon=${snapshot.data.longitude}&units=${snapshot.data.units}&APPID=${snapshot.data.appId}"),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
+                  future: fetchWeather("${config.data.baseUrl}?lat=${config.data.latitude}&lon=${config.data.longitude}&units=${config.data.units}&APPID=${config.data.appId}"),
+                  builder: (context, weatherResponse) {
+                    if (weatherResponse.hasData) {
                       return new Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
@@ -72,28 +69,28 @@ class _MyHomePageState extends State<MyHomePage> {
                               children: <Widget>[
                                 ListTile(
                                   leading: new Icon(Icons.cloud),
-                                  title: new Text(snapshot.data.weather.main),
+                                  title: new Text(weatherResponse.data.weather.main),
                                   subtitle: new Text("Temperature: " +
-                                      snapshot.data.main.temp.round().toString() + " °C"),
+                                      weatherResponse.data.main.temp.round().toString() + " °C"),
                                   onTap: (){ Navigator.push(context,
                                       new MaterialPageRoute(builder: (context) => new WeatherScreen())); },
                                   trailing: new IconButton(icon: new Icon(Icons.refresh),
-                                      onPressed: () => fetchWeather("${config.baseUrl}?lat=${config.latitude}&lon=${config.longitude}&units=${config.units}&APPID=${config.appId}")),
+                                      onPressed: () => fetchWeather("${config.data.baseUrl}?lat=${config.data.latitude}&lon=${config.data.longitude}&units=${config.data.units}&APPID=${config.data.appId}")),
                                 )
                               ],
                             ),
                           )
                         ],
                       );
-                    } else if (snapshot.hasError) {
-                      return new Text("${snapshot.error}");
+                    } else if (weatherResponse.hasError) {
+                      return new Text("${weatherResponse.error}");
                     }
                     // By default, show a loading spinner
                     return new CircularProgressIndicator();
                   },
                 );
-              } else if (snapshot.hasError) {
-                return new Text("${snapshot.error}");
+              } else if (config.hasError) {
+                return new Text("${config.error}");
               }
               // By default, show a loading spinner
               return new CircularProgressIndicator();
