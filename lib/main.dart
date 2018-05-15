@@ -16,11 +16,11 @@ class CottageApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Marabo',
       theme: new ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.lightGreen,
       ),
-      home: new MyHomePage(title: 'Cottage'),
+      home: new MyHomePage(title: 'Marabo'),
     );
   }
 }
