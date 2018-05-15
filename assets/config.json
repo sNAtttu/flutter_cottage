@@ -1,3 +1,7 @@
 {
-  "key": "value"
+  "latitude": 59.941653,
+  "longitude": 23.918724,
+  "units": "metric",
+  "appId": "c5be22a781d7bfc4dd192281dc1150b3",
+  "baseUrl": "http://api.openweathermap.org/data/2.5/weather"
 }

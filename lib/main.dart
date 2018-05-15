@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart' show rootBundle;
 import 'weather.dart';
 import 'Models/WeatherResponse.dart';
+import 'Models/Config.dart';
 
 void main() => runApp(new CottageApp());
 
@@ -34,29 +36,16 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   WeatherResponse weatherResponse;
+  Config config;
 
-  _MyHomePageState(){
-    fetchWeather();
+  Future<Config> loadAsset() async {
+    var stringConf = await rootBundle.loadString('assets/config.json');
+    return Config.fromJson(json.decode((stringConf)));
   }
 
-  // TODO: Values to configure file.
-  // http://api.openweathermap.org/data/2.5/weather?lat=59.941653&lon=23.918724&units=metric&APPID=c5be22a781d7bfc4dd192281dc1150b3
-
-  static double latitude =  59.941653;
-  static double longitude = 23.918724;
-  static String units = "metric";
-  static String appId = "c5be22a781d7bfc4dd192281dc1150b3";
-  static String baseUrl = "http://api.openweathermap.org/data/2.5/weather";
-  final String url = "$baseUrl?lat=$latitude&lon=$longitude&units=$units&APPID=$appId";
-
-  Future<WeatherResponse> fetchWeather() async {
-    final response = await http.get(url);
-    final responseJson = json.decode(response.body);
-    WeatherResponse weatherResp = WeatherResponse.fromJson(responseJson);
-    setState(() {
-      weatherResponse = weatherResp;
-    });
-    return weatherResp;
+  Future<WeatherResponse> fetchWeather(String url) async {
+    var response = await http.get(url);
+    return WeatherResponse.fromJson(json.decode(response.body));
   }
 
   @override
@@ -66,28 +55,50 @@ class _MyHomePageState extends State<MyHomePage> {
         title: new Text(widget.title),
       ),
       body: new Center(
-        child: new Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-           new Card(
-             child: new Column(
-               mainAxisSize: MainAxisSize.min,
-               children: <Widget>[
-                 ListTile(
-                   leading: new Icon(Icons.cloud),
-                   title: new Text(weatherResponse.weather.main),
-                   subtitle: new Text("Temperature: " +
-                       weatherResponse.main.temp.round().toString() + " °C"),
-                   onTap: (){ Navigator.push(context,
-                       new MaterialPageRoute(builder: (context) => new WeatherScreen())); },
-                   trailing: new IconButton(icon: new Icon(Icons.refresh),
-                     onPressed: () => fetchWeather()),
-                 )
-               ],
-             ),
-           )
-          ],
-        ),
+        child: new FutureBuilder<Config>(
+            future: loadAsset(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return new FutureBuilder<WeatherResponse>(
+                  future: fetchWeather("${snapshot.data.baseUrl}?lat=${snapshot.data.latitude}&lon=${snapshot.data.longitude}&units=${snapshot.data.units}&APPID=${snapshot.data.appId}"),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return new Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          new Card(
+                            child: new Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                ListTile(
+                                  leading: new Icon(Icons.cloud),
+                                  title: new Text(snapshot.data.weather.main),
+                                  subtitle: new Text("Temperature: " +
+                                      snapshot.data.main.temp.round().toString() + " °C"),
+                                  onTap: (){ Navigator.push(context,
+                                      new MaterialPageRoute(builder: (context) => new WeatherScreen())); },
+                                  trailing: new IconButton(icon: new Icon(Icons.refresh),
+                                      onPressed: () => fetchWeather("${config.baseUrl}?lat=${config.latitude}&lon=${config.longitude}&units=${config.units}&APPID=${config.appId}")),
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      );
+                    } else if (snapshot.hasError) {
+                      return new Text("${snapshot.error}");
+                    }
+                    // By default, show a loading spinner
+                    return new CircularProgressIndicator();
+                  },
+                );
+              } else if (snapshot.hasError) {
+                return new Text("${snapshot.error}");
+              }
+              // By default, show a loading spinner
+              return new CircularProgressIndicator();
+            }
+        )
       ),
     );
   }
