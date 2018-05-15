@@ -73,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   subtitle: new Text("Temperature: " +
                                       weatherResponse.data.main.temp.round().toString() + " °C"),
                                   onTap: (){ Navigator.push(context,
-                                      new MaterialPageRoute(builder: (context) => new WeatherScreen())); },
+                                      new MaterialPageRoute(builder: (context) => new WeatherScreen(response: weatherResponse.data))); },
                                   trailing: new IconButton(icon: new Icon(Icons.refresh),
                                       onPressed: () => fetchWeather("${config.data.baseUrl}?lat=${config.data.latitude}&lon=${config.data.longitude}&units=${config.data.units}&APPID=${config.data.appId}")),
                                 )

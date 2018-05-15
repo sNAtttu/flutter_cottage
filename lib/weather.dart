@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'Models/WeatherResponse.dart';
+import 'package:meta/meta.dart';
 
 class WeatherScreen extends StatelessWidget {
+
+  final WeatherResponse response;
+
+  WeatherScreen({Key key, @required this.response}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -8,12 +15,7 @@ class WeatherScreen extends StatelessWidget {
         title: new Text("Weather"),
       ),
       body: new Center(
-        child: new RaisedButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: new Text('Go back!'),
-        ),
+        child: new Text(response.name),
       ),
     );
   }
