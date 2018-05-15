@@ -54,11 +54,11 @@ class _MyHomePageState extends State<MyHomePage> {
       body: new Center(
         child: new FutureBuilder<Config>(
             future: loadAsset(),
-            builder: (context, config) {
+            builder: (confContext, config) {
               if (config.hasData) {
                 return new FutureBuilder<WeatherResponse>(
                   future: fetchWeather("${config.data.baseUrl}?lat=${config.data.latitude}&lon=${config.data.longitude}&units=${config.data.units}&APPID=${config.data.appId}"),
-                  builder: (context, weatherResponse) {
+                  builder: (weatherContext, weatherResponse) {
                     if (weatherResponse.hasData) {
                       return new Column(
                         mainAxisAlignment: MainAxisAlignment.center,
