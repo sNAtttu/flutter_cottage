@@ -2,20 +2,20 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'WeatherScreen.dart';
 import 'Models/WeatherResponse.dart';
 import 'Models/Config.dart';
 
-class FrontScreen extends StatefulWidget {
-  FrontScreen({Key key, this.title}) : super(key: key);
-  final String title;
 
-  @override
-  _FrontScreenState createState() => new _FrontScreenState();
-}
 
-class _FrontScreenState extends State<FrontScreen> {
+class FrontScreen extends StatelessWidget {
+
+  removeUsername() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove('username');
+  }
 
   Future<Config> loadAsset() async {
     var stringConf = await rootBundle.loadString('assets/config.json');
@@ -30,14 +30,17 @@ class _FrontScreenState extends State<FrontScreen> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      floatingActionButton: new FloatingActionButton(onPressed:
+          () => removeUsername()
+      ),
       appBar: new AppBar(
-        title: new Text(widget.title),
+        title: new Text("Cottage"),
       ),
       body: new Center(
           child: new FutureBuilder<Config>(
               future: loadAsset(),
               builder: (confContext, config) {
-                if (config.hasData) {
+                if (config.hasData && config.connectionState == ConnectionState.done) {
                   return new FutureBuilder<WeatherResponse>(
                     future: fetchWeather("${config.data.baseUrl}?lat=${config.data.latitude}&lon=${config.data.longitude}&units=${config.data.units}&APPID=${config.data.appId}"),
                     builder: (weatherContext, weatherResponse) {
