@@ -1,48 +1,38 @@
 import 'dart:core';
-import 'Coordinates.dart';
-import 'WeatherInfo.dart';
-import 'WeatherMainInfo.dart';
-import 'WindInformation.dart';
-import 'CloudInformation.dart';
+import 'Temperature.dart';
 
 class WeatherResponse {
-  final int id;
-  final int cod;
-  final int dt;
-  final String name;
-  final String base;
-  final Coordinates coord;
-  final WeatherMainInfo main;
-  final WindInformation wind;
-  final CloudInformation clouds;
-  final WeatherInfo weather;
+  final String localObservationDateTime;
+  final int epochTime;
+  final String weatherText;
+  final int weatherIcon;
+  final bool isDayTime;
+  final Temperature temperature;
+  final String mobileLink;
+  final String link;
 
   WeatherResponse({
-    this.id,
-    this.cod,
-    this.dt,
-    this.name,
-    this.base,
-    this.coord,
-    this.main,
-    this.wind,
-    this.clouds,
-    this.weather
+    this.localObservationDateTime,
+    this.epochTime,
+    this.weatherText,
+    this.weatherIcon,
+    this.isDayTime,
+    this.temperature,
+    this.mobileLink,
+    this.link,
   });
 
   factory WeatherResponse.fromJson(Map<String, dynamic> json){
 
     return new WeatherResponse(
-      id: json['id'],
-      cod: json['cod'],
-      dt: json['dt'],
-      name: json['name'],
-      base: json['base'],
-      coord: Coordinates.fromJson(json['coord']),
-      main: WeatherMainInfo.fromJson(json['main']),
-      wind: WindInformation.fromJson(json['wind']),
-      clouds: CloudInformation.fromJson(json['clouds']),
-      weather: WeatherInfo.fromJson(json['weather'][0])
+      localObservationDateTime: json['localObservationDateTime'],
+      epochTime: json['epochTime'],
+      weatherText: json['weatherText'],
+      weatherIcon: json['weatherIcon'],
+      isDayTime: json['isDayTime'],
+      temperature: Temperature.fromJson(json['temperature']),
+      mobileLink: json['mobileLink'],
+      link: json['link'],
     );
   }
 

@@ -23,7 +23,9 @@ class FrontScreen extends StatelessWidget {
   }
 
   Future<WeatherResponse> fetchWeather(String url) async {
-    var response = await http.get(url);
+    var response = await http.get(url,
+        headers: {"Content-Type": "application/json"});
+    print(response.body);
     return WeatherResponse.fromJson(json.decode(response.body));
   }
 
@@ -42,7 +44,7 @@ class FrontScreen extends StatelessWidget {
               builder: (confContext, config) {
                 if (config.hasData && config.connectionState == ConnectionState.done) {
                   return new FutureBuilder<WeatherResponse>(
-                    future: fetchWeather("${config.data.baseUrl}?lat=${config.data.latitude}&lon=${config.data.longitude}&units=${config.data.units}&APPID=${config.data.appId}"),
+                    future: fetchWeather("${config.data.devUrl}"),
                     builder: (weatherContext, weatherResponse) {
                       if (weatherResponse.hasData) {
                         return new Column(
@@ -54,13 +56,12 @@ class FrontScreen extends StatelessWidget {
                                 children: <Widget>[
                                   ListTile(
                                     leading: new Icon(Icons.cloud),
-                                    title: new Text(weatherResponse.data.weather.main),
-                                    subtitle: new Text("Temperature: " +
-                                        weatherResponse.data.main.temp.round().toString() + " °C"),
+                                    title: new Text(weatherResponse.data.weatherText),
+                                    subtitle: new Text("Temperature: ${weatherResponse.data.temperature.metric.value} C"),
                                     onTap: (){ Navigator.push(context,
                                         new MaterialPageRoute(builder: (context) => new WeatherScreen(response: weatherResponse.data))); },
                                     trailing: new IconButton(icon: new Icon(Icons.refresh),
-                                        onPressed: () => fetchWeather("${config.data.baseUrl}?lat=${config.data.latitude}&lon=${config.data.longitude}&units=${config.data.units}&APPID=${config.data.appId}")),
+                                        onPressed: () => fetchWeather("${config.data.devUrl}")),
                                   )
                                 ],
                               ),

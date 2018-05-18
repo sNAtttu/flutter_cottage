@@ -15,7 +15,7 @@ class WeatherScreen extends StatelessWidget {
         title: new Text("Weather"),
       ),
       body: new Center(
-        child: new Text(response.name),
+        child: new Text(response.temperature.metric.value.toString()),
       ),
     );
   }
