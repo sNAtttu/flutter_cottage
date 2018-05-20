@@ -23,16 +23,12 @@ class FrontScreen extends StatelessWidget {
   Future<WeatherResponse> fetchWeather(String url) async {
     var response = await http.get(url,
         headers: {"Content-Type": "application/json"});
-    print(response.body);
     return WeatherResponse.fromJson(json.decode(response.body));
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      floatingActionButton: new FloatingActionButton(onPressed:
-          () => removeUsername()
-      ),
       appBar: new AppBar(
         title: new Text("Cottage"),
       ),
@@ -45,6 +41,11 @@ class FrontScreen extends StatelessWidget {
             return new Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                new Card(
+                  child: new ListView.builder(
+                      itemBuilder: (context, index)  => new EntryItem(data[index]),
+                      itemCount: data.length,
+                      shrinkWrap: true)),
                 new Card(
                   child: new Column(
                     mainAxisSize: MainAxisSize.min,
@@ -71,5 +72,45 @@ class FrontScreen extends StatelessWidget {
         }),
       )
     );
+  }
+}
+// One entry in the multilevel list displayed by this app.
+class Entry {
+  Entry(this.title, [this.children = const <Entry>[]]);
+
+  final String title;
+  final List<Entry> children;
+}
+
+// The entire multilevel list displayed by this app.
+final List<Entry> data = <Entry>[
+  new Entry(
+    'Chapter A',
+    <Entry>[
+      new Entry('Section A1'),
+      new Entry('Section A2'),
+    ],
+  ),
+];
+
+// Displays one Entry. If the entry has children then it's displayed
+// with an ExpansionTile.
+class EntryItem extends StatelessWidget {
+  const EntryItem(this.entry);
+
+  final Entry entry;
+
+  Widget _buildTiles(Entry root) {
+    if (root.children.isEmpty) return new ListTile(title: new Text(root.title));
+    return new ExpansionTile(
+      key: new PageStorageKey<Entry>(root),
+      title: new Text(root.title),
+      children: root.children.map(_buildTiles).toList(),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _buildTiles(entry);
   }
 }
