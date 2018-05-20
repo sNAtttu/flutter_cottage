@@ -42,10 +42,28 @@ class FrontScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 new Card(
-                  child: new ListView.builder(
+                  child: new Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      new ListView.builder(
                       itemBuilder: (context, index)  => new EntryItem(data[index]),
                       itemCount: data.length,
-                      shrinkWrap: true)),
+                      shrinkWrap: true),
+                      new Row(
+                        children: <Widget>[
+                          new Expanded(child: new RaisedButton(
+                            onPressed: () => print("Add List Item"),
+                            color: Colors.blueGrey,
+                            child: new Text("Add item"),
+                            textColor: Colors.white,
+                          ))
+                        ],
+                        mainAxisSize: MainAxisSize.max,
+
+                      )
+                    ],
+                  )
+            ),
                 new Card(
                   child: new Column(
                     mainAxisSize: MainAxisSize.min,
