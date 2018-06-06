@@ -46,8 +46,8 @@ class FrontScreen extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       new ListView.builder(
-                      itemBuilder: (context, index)  => new EntryItem(data[index], this.config),
-                      itemCount: data.length,
+                      itemBuilder: (context, index)  => new EntryItem(this.config),
+                      itemCount: 1,
                       shrinkWrap: true),
                       new Row(
                         children: <Widget>[

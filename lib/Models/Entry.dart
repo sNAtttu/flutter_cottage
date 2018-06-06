@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'Item.dart';
+
 import 'Config.dart';
 import 'ItemList.dart';
 import 'package:http/http.dart' as http;
@@ -21,44 +23,32 @@ Future<ItemList> fetchItemList(String url) async {
   }
   catch(e){
     print(e);
+    throw e;
   }
 }
-
-// The entire multilevel list displayed by this app.
-final List<Entry> data = <Entry>[
-  new Entry(
-    'Stuff left at the Cottage',
-    <Entry>[
-      new Entry('Section A1'),
-      new Entry('Section A2'),
-    ],
-  ),
-];
 
 // Displays one Entry. If the entry has children then it's displayed
 // with an ExpansionTile.
 class EntryItem extends StatelessWidget {
-  const EntryItem(this.entry, this.config);
-
-  final Entry entry;
+  const EntryItem(this.config);
+  final ItemList itemList;
   final Config config;
-  Widget _buildTiles(Entry root) {
-    if (root.children.isEmpty) return new ListTile(title: new Text(root.title));
+  Widget _buildTiles() {
     return new FutureBuilder<ItemList>(
       future: fetchItemList("${config.devUrl}ItemLists"),
       builder: (context, response){
         if(response.hasData){
           return new ExpansionTile(
-            key: new PageStorageKey<Entry>(root),
+            key: new PageStorageKey<int>(response.data.id),
             title: new Text(response.data.name),
-            children: root.children.map(_buildTiles).toList(),
+            children: response.data.items.map((item) => new Text(item.name)).toList(),
           );
         }
         else{
           return new ExpansionTile(
-            key: new PageStorageKey<Entry>(root),
+            key: new PageStorageKey<int>(1),
             title: new CircularProgressIndicator(),
-            children: root.children.map(_buildTiles).toList(),
+            children: null,
           );
         }
       }
@@ -67,6 +57,6 @@ class EntryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _buildTiles(entry);
+    return _buildTiles();
   }
 }
