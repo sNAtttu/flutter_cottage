@@ -1,41 +1,39 @@
 import 'dart:async';
 import 'dart:convert';
-import 'Item.dart';
-
 import 'Config.dart';
 import 'ItemList.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-// One entry in the multilevel list displayed by this app.
 import 'package:flutter/widgets.dart';
-class Entry {
-  Entry(this.title, [this.children = const <Entry>[]]);
 
-  final String title;
-  final List<Entry> children;
-}
-
-Future<ItemList> fetchItemList(String url) async {
-  try{
-    var response = await http.get(url,
-        headers: {"Content-Type": "application/json"});
-    return ItemList.fromJson(json.decode(response.body)[0]);
-  }
-  catch(e){
-    print(e);
-    throw e;
-  }
-}
-
-// Displays one Entry. If the entry has children then it's displayed
-// with an ExpansionTile.
-class EntryItem extends StatelessWidget {
-  const EntryItem(this.config);
-  final ItemList itemList;
+class ItemListWidget extends StatefulWidget {
+  ItemListWidget(this.config);
   final Config config;
-  Widget _buildTiles() {
+
+  @override
+  State<StatefulWidget> createState() => new EntryItem();
+}
+
+class EntryItem extends State<ItemListWidget> {
+
+  ItemList itemList;
+
+  Future<ItemList> fetchItemList(String url) async {
+    try{
+      var response = await http.get(url,
+          headers: {"Content-Type": "application/json"});
+      return ItemList.fromJson(json.decode(response.body)[0]);
+    }
+    catch(e){
+      print("Failed to deserialize item list: " + e);
+      throw e;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return new FutureBuilder<ItemList>(
-      future: fetchItemList("${config.devUrl}ItemLists"),
+      future: fetchItemList("${widget.config.devUrl}ItemLists"),
       builder: (context, response){
         if(response.hasData){
           return new ExpansionTile(
@@ -53,10 +51,5 @@ class EntryItem extends StatelessWidget {
         }
       }
     );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _buildTiles();
   }
 }

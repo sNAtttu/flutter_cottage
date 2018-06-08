@@ -6,7 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'WeatherScreen.dart';
 import 'Models/WeatherResponse.dart';
 import 'Models/Config.dart';
-import 'Models/Entry.dart';
+import 'Components/ItemlistCard.dart';
+import 'Components/WeatherCard.dart';
 
 
 class FrontScreen extends StatelessWidget {
@@ -41,45 +42,8 @@ class FrontScreen extends StatelessWidget {
             return new Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                new Card(
-                  child: new Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      new ListView.builder(
-                      itemBuilder: (context, index)  => new EntryItem(this.config),
-                      itemCount: 1,
-                      shrinkWrap: true),
-                      new Row(
-                        children: <Widget>[
-                          new Expanded(child: new RaisedButton(
-                            onPressed: () => print("Add List Item"),
-                            color: Colors.blueGrey,
-                            child: new Text("Add item"),
-                            textColor: Colors.white,
-                          ))
-                        ],
-                        mainAxisSize: MainAxisSize.max,
-
-                      )
-                    ],
-                  )
-            ),
-                new Card(
-                  child: new Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      ListTile(
-                        leading: new Icon(Icons.cloud),
-                        title: new Text(weatherResponse.data.weatherText),
-                        subtitle: new Text("Temperature: ${weatherResponse.data.temperature.metric.value} C"),
-                        onTap: (){ Navigator.push(context,
-                            new MaterialPageRoute(builder: (context) => new WeatherScreen(response: weatherResponse.data))); },
-                        trailing: new IconButton(icon: new Icon(Icons.refresh),
-                            onPressed: () => fetchWeather("${config.devUrl}WeatherCondition")),
-                      )
-                    ],
-                  ),
-                )
+                new ItemListCard(this.config),
+                new WeatherCard(weatherResponse.data, this.config)
               ],
             );
           } else if (weatherResponse.hasError) {
